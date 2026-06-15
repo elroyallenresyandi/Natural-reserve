@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Virtual Environment
+venv/
+env/
+.env
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# VSCode
+.vscode/settings.json
+.vscode/launch.json
+
+# Logs
+*.log

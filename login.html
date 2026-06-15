@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id" id="htmlRoot">
+<head>
+<meta charset="UTF-8">
+<title>Login — Natural Reserve Fish Feeding Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:    #0d9488;
+  --teal2:   #14b8a6;
+  --teal3:   #5eead4;
+  --ocean:   #0a4a5e;
+  --deep:    #051a26;
+  --surf:    #e0f7f4;
+  --foam:    #f0fdfa;
+  --amber:   #f59e0b;
+  --amber2:  #fcd34d;
+  --coral:   #f43f5e;
+  --lime:    #84cc16;
+  --ink:     #0d2130;
+  --ink2:    #1e4060;
+  --mist:    #94a3b8;
+  --border:  rgba(13,148,136,0.2);
+  --glow:    rgba(13,148,136,0.15);
+  --r:       12px;
+  --r-sm:    8px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--deep);
+  color: #e2f0ed;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 10%, rgba(13,148,136,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 85% 90%, rgba(10,74,94,0.25) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 40% at 50% 50%, rgba(5,26,38,0.8) 0%, transparent 100%),
+    linear-gradient(180deg, #051a26 0%, #031118 100%);
+  pointer-events: none;
+}
+
+body::after {
+  content: '';
+  position: fixed; inset: 0; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='60'%3E%3Cpath d='M0 30 Q30 10 60 30 Q90 50 120 30' fill='none' stroke='rgba(13,148,136,0.04)' stroke-width='1.5'/%3E%3C/svg%3E");
+  background-size: 120px 60px;
+  pointer-events: none;
+  animation: waveDrift 20s linear infinite;
+}
+@keyframes waveDrift { from { background-position: 0 0; } to { background-position: 240px 60px; } }
+
+.bubbles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.bubble {
+  position: absolute; bottom: -40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(94,234,212,0.25), rgba(13,148,136,0.05));
+  border: 1px solid rgba(94,234,212,0.1);
+  animation: rise linear infinite;
+}
+@keyframes rise {
+  0%   { transform: translateY(0) scale(1); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 0.5; }
+  100% { transform: translateY(-110vh) scale(0.7); opacity: 0; }
+}
+
+.wrapper {
+  position: relative; z-index: 1;
+  width: 100%; max-width: 460px;
+  padding: 24px;
+}
+
+header {
+  text-align: center;
+  margin-bottom: 32px;
+  animation: fadeDown 0.7s ease both;
+}
+@keyframes fadeDown { from { opacity:0; transform:translateY(-20px); } to { opacity:1; transform:translateY(0); } }
+
+.logo-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 72px; height: 72px;
+  background: linear-gradient(135deg, var(--teal), var(--ocean));
+  border-radius: 20px;
+  margin-bottom: 16px;
+  box-shadow: 0 0 32px rgba(13,148,136,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  font-size: 34px;
+}
+
+h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(22px, 5vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #e0f7f4 20%, var(--teal3) 60%, var(--teal2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+  margin-bottom: 8px;
+}
+
+.header-sub {
+  font-size: 13px; color: var(--mist);
+  font-weight: 300; letter-spacing: 0.01em;
+  line-height: 1.6;
+}
+
+/* ── ACCESS CODE BANNER ── */
+.access-banner {
+  background: linear-gradient(135deg, rgba(13,148,136,0.08), rgba(10,74,94,0.15));
+  border: 1px solid rgba(13,148,136,0.25);
+  border-radius: var(--r-sm);
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  animation: fadeUp 0.5s ease both;
+}
+.access-banner-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.access-banner-text {
+  font-size: 12px;
+  color: var(--teal3);
+  line-height: 1.6;
+  font-family: 'DM Mono', monospace;
+}
+.access-banner-text strong {
+  color: #e0f7f4;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 2px;
+}
+
+/* ── TABS ── */
+.tab-row {
+  display: flex;
+  gap: 2px;
+  background: rgba(5,26,38,0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 4px;
+  margin-bottom: 24px;
+}
+.tab-btn {
+  flex: 1;
+  padding: 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  font-family: 'Syne', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mist);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--teal), #0a7c72);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.3);
+}
+.tab-btn:not(.active):hover { color: var(--teal3); }
+
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── LOGIN CARD ── */
+.login-card {
+  background: rgba(10, 40, 56, 0.6);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 28px 28px;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.35), inset 0 1px 0 rgba(94,234,212,0.06);
+  animation: fadeUp 0.7s 0.15s ease both;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:translateY(0); } }
+
+.card-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--teal3); margin-bottom: 20px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-title::before {
+  content: ''; display: block;
+  width: 3px; height: 14px;
+  background: linear-gradient(to bottom, var(--teal2), var(--teal));
+  border-radius: 2px;
+}
+
+/* ── FORM ── */
+.form-group { margin-bottom: 16px; }
+
+.form-label {
+  display: block;
+  font-size: 11px; font-weight: 500;
+  color: var(--mist); letter-spacing: 0.07em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+}
+
+.input-wrap { position: relative; }
+
+.input-icon {
+  position: absolute; left: 13px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--teal); font-size: 15px;
+  pointer-events: none;
+  opacity: 0.8;
+}
+
+.form-input {
+  background: rgba(5, 26, 38, 0.7);
+  border: 1.5px solid rgba(13,148,136,0.25);
+  border-radius: var(--r-sm);
+  color: #e0f7f4;
+  font-family: 'DM Mono', monospace;
+  font-size: 14px; font-weight: 400;
+  padding: 11px 14px 11px 40px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  width: 100%;
+}
+.form-input:focus {
+  border-color: var(--teal2);
+  box-shadow: 0 0 0 3px rgba(13,148,136,0.15);
+}
+.form-input::placeholder { color: rgba(148,163,184,0.35); }
+
+/* Access code input khusus — lebih besar & mencolok */
+.access-code-input {
+  font-size: 20px !important;
+  letter-spacing: 0.18em !important;
+  text-align: center !important;
+  padding: 14px 14px !important;
+  font-weight: 500 !important;
+  border-color: rgba(13,148,136,0.35) !important;
+}
+.access-code-input:focus {
+  border-color: var(--teal2) !important;
+  box-shadow: 0 0 0 4px rgba(13,148,136,0.2) !important;
+}
+
+.eye-btn {
+  position: absolute; right: 12px; top: 50%;
+  transform: translateY(-50%);
+  background: none; border: none;
+  color: var(--mist); cursor: pointer;
+  padding: 4px; font-size: 14px;
+  transition: color 0.2s;
+  line-height: 1;
+}
+.eye-btn:hover { color: var(--teal3); }
+
+.form-footer-row {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.checkbox-row {
+  display: flex; align-items: center; gap: 8px;
+  cursor: pointer; user-select: none;
+}
+.checkbox-row input[type="checkbox"] {
+  appearance: none; -webkit-appearance: none;
+  width: 16px; height: 16px;
+  border: 1.5px solid rgba(13,148,136,0.35);
+  border-radius: 4px;
+  background: rgba(5,26,38,0.7);
+  cursor: pointer; transition: all 0.2s;
+  position: relative;
+}
+.checkbox-row input[type="checkbox"]:checked {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.checkbox-row input[type="checkbox"]:checked::after {
+  content: '';
+  position: absolute; left: 4px; top: 1.5px;
+  width: 5px; height: 9px;
+  border: 2px solid #fff; border-top: none; border-left: none;
+  transform: rotate(45deg);
+}
+.checkbox-label { font-size: 12px; color: var(--mist); }
+
+.forgot-link {
+  font-size: 12px; color: var(--teal3);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.forgot-link:hover { color: #fff; text-decoration: underline; }
+
+/* ── BUTTONS ── */
+.btn-login {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, var(--teal), #0a7c72);
+  border: none; border-radius: var(--r-sm);
+  color: #fff; font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.06em;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(13,148,136,0.3);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
+}
+.btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(13,148,136,0.45); }
+.btn-login:active { transform: translateY(0); }
+.btn-login.loading .btn-text { opacity: 0; }
+.btn-login.loading .btn-spinner { display: inline-block; }
+.btn-spinner {
+  display: none;
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  position: absolute;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── REQUEST FORM ── */
+.request-hint {
+  font-size: 12px;
+  color: var(--mist);
+  line-height: 1.7;
+  margin-bottom: 18px;
+  padding: 10px 14px;
+  background: rgba(5,26,38,0.4);
+  border-radius: var(--r-sm);
+  border-left: 3px solid var(--teal);
+}
+
+.btn-request {
+  width: 100%; padding: 13px;
+  background: linear-gradient(135deg, rgba(13,148,136,0.15), rgba(10,74,94,0.3));
+  border: 1.5px solid rgba(13,148,136,0.4);
+  border-radius: var(--r-sm);
+  color: var(--teal3); font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700; letter-spacing: 0.06em;
+  cursor: pointer; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  position: relative; overflow: hidden;
+  margin-top: 4px;
+}
+.btn-request:hover {
+  background: linear-gradient(135deg, rgba(13,148,136,0.25), rgba(10,74,94,0.4));
+  border-color: var(--teal2);
+  color: #fff;
+  transform: translateY(-1px);
+}
+.btn-request.loading .btn-text { opacity: 0; }
+.btn-request.loading .btn-spinner { display: inline-block; }
+
+/* ── ALERT ── */
+.alert {
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px; font-family: 'DM Mono', monospace;
+  margin-bottom: 16px;
+  display: none;
+  align-items: center; gap: 8px;
+  animation: fadeUp 0.3s ease both;
+}
+.alert.show { display: flex; }
+.alert-error {
+  background: rgba(244,63,94,0.08);
+  border: 1px solid rgba(244,63,94,0.25);
+  color: #fda4af;
+}
+.alert-success {
+  background: rgba(13,148,136,0.08);
+  border: 1px solid rgba(13,148,136,0.25);
+  color: var(--teal3);
+}
+
+/* ── FOOTER ── */
+.login-footer {
+  text-align: center; margin-top: 24px;
+  font-size: 11px; color: rgba(148,163,184,0.4);
+  line-height: 1.6;
+  animation: fadeUp 0.7s 0.3s ease both;
+}
+.login-footer strong { color: var(--mist); }
+
+.security-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  margin-top: 12px;
+  font-size: 10px; color: rgba(13,148,136,0.5);
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+}
+.security-badge svg { width: 12px; height: 12px; flex-shrink: 0; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(13,148,136,0.3); border-radius: 3px; }
+</style>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-app.js"></script>
+</head>
+<body>
+
+<div class="bubbles" id="bubbles"></div>
+
+<div class="wrapper">
+  <!-- Header -->
+  <header>
+    <div class="logo-mark">🐟</div>
+    <h1>Natural Reserve</h1>
+    <p class="header-sub">Fish Feeding Calculator — Sistem Akses Terbatas</p>
+  </header>
+
+  <!-- Login Card -->
+  <div class="login-card">
+
+    <!-- Access Banner -->
+    <div class="access-banner">
+      <div class="access-banner-icon">🔑</div>
+      <div class="access-banner-text">
+        <strong>Sistem Akses Terbatas</strong>
+        Login menggunakan kode akses unik yang dikirim ke email Anda, atau ajukan permintaan akses jika belum memiliki kode.
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tab-row">
+      <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">🔓 Masuk</button>
+      <button class="tab-btn" id="tabRequest" onclick="switchTab('request')">📨 Minta Akses</button>
+    </div>
+
+    <!-- ── TAB: LOGIN ── -->
+    <div class="tab-panel active" id="panelLogin">
+
+      <div class="card-title">Masuk dengan Kode Akses</div>
+
+      <div class="alert alert-error" id="alertError">
+        <span>⚠</span>
+        <span id="alertErrorMsg">Kode akses tidak valid.</span>
+      </div>
+      <div class="alert alert-success" id="alertSuccess">
+        <span>✓</span>
+        <span id="alertSuccessMsg">Login berhasil! Mengalihkan…</span>
+      </div>
+
+      <!-- Username -->
+      <div class="form-group">
+        <label class="form-label" for="username">Username</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </span>
+          <input class="form-input" id="username" type="text" placeholder="Masukkan username" autocomplete="username" autofocus>
+        </div>
+      </div>
+
+      <!-- Kode Akses -->
+      <div class="form-group">
+        <label class="form-label" for="accessCode">Kode Akses</label>
+        <div class="input-wrap">
+          <input class="form-input access-code-input" id="accessCode" type="password" placeholder="● ● ● ● ● ● ● ●" autocomplete="current-password" maxlength="32">
+          <button class="eye-btn" onclick="toggleAccessCode()" type="button" title="Tampilkan/sembunyikan">
+            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div style="font-size:11px;color:rgba(148,163,184,0.4);margin-top:5px;font-family:'DM Mono',monospace;">
+          Kode unik dikirim admin ke email Anda
+        </div>
+      </div>
+
+      <!-- Remember -->
+      <div class="form-footer-row">
+        <label class="checkbox-row">
+          <input type="checkbox" id="rememberMe">
+          <span class="checkbox-label">Ingat username</span>
+        </label>
+        <a href="#" class="forgot-link" onclick="switchTab('request'); return false;">Belum punya kode?</a>
+      </div>
+
+      <!-- Button Login -->
+      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+        <div class="btn-spinner" id="btnSpinner"></div>
+        <span class="btn-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+          Masuk
+        </span>
+      </button>
+    </div>
+
+    <!-- ── TAB: REQUEST ACCESS ── -->
+    <div class="tab-panel" id="panelRequest">
+
+      <div class="card-title">Ajukan Permintaan Akses</div>
+
+      <div class="alert alert-error" id="reqAlertError">
+        <span>⚠</span>
+        <span id="reqErrorMsg">Terjadi kesalahan.</span>
+      </div>
+      <div class="alert alert-success" id="reqAlertSuccess">
+        <span>✓</span>
+        <span id="reqSuccessMsg">Permintaan terkirim! Admin akan meninjau dan mengirim kode ke email Anda.</span>
+      </div>
+
+      <div class="request-hint">
+        📋 Isi form berikut. Admin akan meninjau permintaan Anda dan mengirimkan <strong style="color:var(--teal3)">kode akses unik</strong> ke email yang Anda daftarkan.
+      </div>
+
+      <!-- Nama -->
+      <div class="form-group">
+        <label class="form-label" for="reqName">Nama Lengkap</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+          </span>
+          <input class="form-input" id="reqName" type="text" placeholder="Nama lengkap Anda">
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="form-group">
+        <label class="form-label" for="reqEmail">Email</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </span>
+          <input class="form-input" id="reqEmail" type="email" placeholder="email@contoh.com">
+        </div>
+      </div>
+
+      <!-- Username yang diinginkan -->
+      <div class="form-group">
+        <label class="form-label" for="reqUsername">Username yang Diinginkan</label>
+        <div class="input-wrap">
+          <span class="input-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </span>
+          <input class="form-input" id="reqUsername" type="text" placeholder="username_anda">
+        </div>
+      </div>
+
+      <!-- Alasan -->
+      <div class="form-group">
+        <label class="form-label" for="reqReason">Keperluan Akses</label>
+        <div class="input-wrap">
+          <span class="input-icon" style="top:14px;transform:none;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </span>
+          <textarea class="form-input" id="reqReason" rows="3" placeholder="Jelaskan keperluan akses Anda..." style="padding-top:10px;resize:vertical;min-height:80px;"></textarea>
+        </div>
+      </div>
+
+      <!-- Button Request -->
+      <button class="btn-request" id="reqBtn" onclick="handleRequest()">
+        <div class="btn-spinner" id="reqSpinner"></div>
+        <span class="btn-text">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Kirim Permintaan Akses
+        </span>
+      </button>
+
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--mist);">
+        Sudah punya kode? <a href="#" style="color:var(--teal3);text-decoration:none;font-weight:600;" onclick="switchTab('login');return false;">Masuk di sini</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="login-footer">
+    <strong>Natural Reserve</strong> · Fish Feeding Calculator<br>
+    v2.0 · Sistem Akses Berbasis Kode Unik
+    <div>
+      <span class="security-badge">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Koneksi aman · Kode unik per pengguna
+      </span>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── BUBBLES ── */
+(function(){
+  const wrap = document.getElementById('bubbles');
+  const cfg = [
+    {s:8,  l:12, d:1.2, x:10},
+    {s:14, l:18, d:0.8, x:25},
+    {s:6,  l:14, d:1.6, x:40},
+    {s:10, l:22, d:1.0, x:55},
+    {s:18, l:16, d:0.6, x:70},
+    {s:7,  l:20, d:1.4, x:82},
+    {s:12, l:10, d:1.1, x:92},
+  ];
+  cfg.forEach(({s,l,d,x}) => {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    b.style.cssText = `width:${s}px;height:${s}px;left:${x}%;animation-duration:${l}s;animation-delay:-${d*l}s`;
+    wrap.appendChild(b);
+  });
+})();
+
+/* ── TAB SWITCH ── */
+function switchTab(tab) {
+  ['login','request'].forEach(t => {
+    document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+    document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+  });
+  // hide all alerts
+  ['alertError','alertSuccess','reqAlertError','reqAlertSuccess'].forEach(id => {
+    document.getElementById(id).classList.remove('show');
+  });
+}
+
+/* ── TOGGLE ACCESS CODE VISIBILITY ── */
+function toggleAccessCode() {
+  const inp = document.getElementById('accessCode');
+  const icon = document.getElementById('eyeIcon');
+  const show = inp.type === 'password';
+  inp.type = show ? 'text' : 'password';
+  icon.innerHTML = show
+    ? `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>`
+    : `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+}
+
+/* ── FORMAT ACCESS CODE — auto uppercase ── */
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('accessCode');
+  if (inp) {
+    inp.addEventListener('input', () => {
+      const pos = inp.selectionStart;
+      inp.value = inp.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      inp.setSelectionRange(pos, pos);
+    });
+  }
+
+  // Remember me
+  const saved = localStorage.getItem('nr_remember_user');
+  if (saved) {
+    document.getElementById('username').value = saved;
+    document.getElementById('rememberMe').checked = true;
+    document.getElementById('accessCode').focus();
+  }
+
+  // Jika sudah login, langsung ke app
+  nrAuthReady().then(user => {
+    if (user) window.location.href = 'index.html';
+  });
+});
+
+/* ── HANDLE LOGIN ── */
+async function handleLogin() {
+  const username   = document.getElementById('username').value.trim();
+  const accessCode = document.getElementById('accessCode').value.trim().toUpperCase();
+  const btn        = document.getElementById('loginBtn');
+  const errAlert   = document.getElementById('alertError');
+  const sucAlert   = document.getElementById('alertSuccess');
+  const errMsg     = document.getElementById('alertErrorMsg');
+
+  errAlert.classList.remove('show');
+  sucAlert.classList.remove('show');
+
+  if (!username) {
+    errMsg.textContent = 'Username tidak boleh kosong.';
+    errAlert.classList.add('show');
+    document.getElementById('username').focus();
+    return;
+  }
+  if (!accessCode) {
+    errMsg.textContent = 'Kode akses tidak boleh kosong.';
+    errAlert.classList.add('show');
+    document.getElementById('accessCode').focus();
+    return;
+  }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    // Verifikasi kode akses di Firestore sebelum login Firebase Auth
+    const codeQuery = await db.collection('access_codes')
+      .where('username', '==', username.toLowerCase())
+      .where('code', '==', accessCode)
+      .where('status', '==', 'active')
+      .limit(1)
+      .get();
+
+    if (codeQuery.empty) {
+      throw { code: 'invalid-code' };
+    }
+
+    // Kode valid — login ke Firebase Auth
+    await nrLogin(username, accessCode);
+
+    // Simpan remember me
+    if (document.getElementById('rememberMe').checked) {
+      localStorage.setItem('nr_remember_user', username);
+    } else {
+      localStorage.removeItem('nr_remember_user');
+    }
+
+    // Log aktivitas
+    const user = firebase.auth().currentUser;
+    if (user) {
+      await nrLogActivity(user.uid, 'login', 'Login menggunakan kode akses unik');
+    }
+
+    btn.classList.remove('loading');
+    sucAlert.classList.add('show');
+    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+
+  } catch(err) {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    let msg = 'Kode akses tidak valid atau username salah.';
+    if (err.code === 'invalid-code') msg = 'Kode akses salah atau tidak aktif.';
+    if (err.code === 'auth/too-many-requests') msg = 'Terlalu banyak percobaan. Coba lagi nanti.';
+    errMsg.textContent = msg;
+    errAlert.classList.add('show');
+
+    // Shake
+    const card = document.querySelector('.login-card');
+    card.style.animation = 'none';
+    card.offsetHeight;
+    card.style.animation = 'shake 0.4s ease';
+  }
+}
+
+/* ── HANDLE REQUEST AKSES ── */
+async function handleRequest() {
+  const name     = document.getElementById('reqName').value.trim();
+  const email    = document.getElementById('reqEmail').value.trim();
+  const username = document.getElementById('reqUsername').value.trim().toLowerCase();
+  const reason   = document.getElementById('reqReason').value.trim();
+  const btn      = document.getElementById('reqBtn');
+  const errAlert = document.getElementById('reqAlertError');
+  const sucAlert = document.getElementById('reqAlertSuccess');
+  const errMsg   = document.getElementById('reqErrorMsg');
+
+  errAlert.classList.remove('show');
+  sucAlert.classList.remove('show');
+
+  if (!name)     { errMsg.textContent='Nama tidak boleh kosong.';   errAlert.classList.add('show'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errMsg.textContent = 'Format email tidak valid.';
+    errAlert.classList.add('show'); return;
+  }
+  if (!username || username.length < 3) {
+    errMsg.textContent = 'Username minimal 3 karakter.';
+    errAlert.classList.add('show'); return;
+  }
+  if (/\s/.test(username)) {
+    errMsg.textContent = 'Username tidak boleh ada spasi.';
+    errAlert.classList.add('show'); return;
+  }
+  if (!reason)   { errMsg.textContent='Keperluan akses harus diisi.'; errAlert.classList.add('show'); return; }
+
+  btn.classList.add('loading');
+  btn.disabled = true;
+
+  try {
+    // Cek username sudah ada di request pending
+    const existing = await db.collection('access_requests')
+      .where('username', '==', username)
+      .where('status', '==', 'pending')
+      .limit(1).get();
+
+    if (!existing.empty) {
+      throw { code: 'duplicate' };
+    }
+
+    // Simpan ke Firestore collection access_requests
+    await db.collection('access_requests').add({
+      name, email, username, reason,
+      status: 'pending',
+      createdAt: new Date().toISOString(),
+    });
+
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    sucAlert.classList.add('show');
+
+    // Reset form
+    ['reqName','reqEmail','reqUsername','reqReason'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+
+  } catch(err) {
+    btn.classList.remove('loading');
+    btn.disabled = false;
+    let msg = 'Gagal mengirim permintaan. Coba lagi.';
+    if (err.code === 'duplicate') msg = 'Username ini sudah memiliki permintaan yang sedang menunggu persetujuan.';
+    errMsg.textContent = msg;
+    errAlert.classList.add('show');
+  }
+}
+
+/* ── ENTER KEY ── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    if (document.getElementById('panelLogin').classList.contains('active')) handleLogin();
+    else handleRequest();
+  }
+});
+
+/* Shake animation */
+const styleEl = document.createElement('style');
+styleEl.textContent = '@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}';
+document.head.appendChild(styleEl);
+</script>
+</body>
+</html>
